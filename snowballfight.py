@@ -9,6 +9,7 @@ class SnowballFight:
                 self.penguincounter = 0 ## times you've hit a penguin
                 self.skillz = 0
                 self.choice = None
+                self.again = True
 
         def startFight(self):
                 print("You have stumbled into a snowball fight! Quick, duck or throw?")
@@ -25,16 +26,19 @@ class SnowballFight:
                 self.choice=input().lower()
                 if self.choice != "duck" and self.choice != "throw":
                         print("You didn't duck or throw, what gives?")
-                        game.pause()
+                        self.pause()
                         print("The penguins take advantage of your confusion. You're hit!")
                         self.hitcounter += 1
                 else:
                         print("You chose to {}!".format(self.choice))
+                        if self.choice == "duck" and random.randint(1,10)<3:
+                                print("quack")
+                                self.pause()
                 return self.choice
 
         def skill(self):
                 print("Wait, how good are you at {}ing?".format(self.choice))
-                game.pause()
+                self.pause()
                 counter = 0
                 oops=["Too late!", "That's not right!", "The penguins are coming!"]
                 while counter <5:
@@ -62,10 +66,10 @@ class SnowballFight:
         def throwResult(self):
                 throw=random.randint(1,12)
                 print("You throw a snowball")
-                game.pause()
+                self.pause()
                 if throw-self.skillz > 2 :
                         print("You miss!")
-                        game.pause()
+                        self.pause()
                         if random.randint(1,100) % 2 == 0:
                                 print("Augh, the penguins hit back! Fear the penguins.")
                                 self.hitcounter += 1
@@ -73,7 +77,7 @@ class SnowballFight:
                                 print("You escape retaliation from the penguins... this time.")
                 elif throw-self.skillz < -3:
                         print("Your snowball hits! Penguin down, penguin down!")
-                        game.pause()
+                        self.pause()
                         self.penguincounter += 1
                         if random.randint(1,100) % 3 == 0:
                                 print("Augh, the penguins hit back! Fear the penguins.")
@@ -95,26 +99,43 @@ class SnowballFight:
         def pause(self):
                 time.sleep(0.5)
 
+        def playAgain(self):
+                print("Do you want to challenge the penguins again?")
+                self.pause()
+                again = input("Do you want to play again? yes/no \n").lower()
+                if again == "yes":
+                        self.again = True
+                else:
+                        self.again = False
+                return self.again
+
 if __name__=="__main__":
         game = SnowballFight()
-        game.startFight() ## defines self.choice
-        game.pause()
-        game.skill()  ## defines skillz
-        game.pause()
-        while game.hitcounter < 5 and game.penguincounter < 5:
-                if game.choice == "throw":
-                        game.throwResult()
-                elif game.choice == "duck":
-                        game.duckResult()
-                if game.hitcounter == 5 or game.penguincounter == 5:
-                        break
-                else:        
-                        game.pause()
-                        game.continueFight()
+        while game.again:
+                game.hitcounter = 0 ## times you've been hit
+                game.penguincounter = 0 ## times you've hit a penguin
+                game.skillz = 0
+                game.choice = None
+                game.startFight() ## defines self.choice
                 game.pause()
-        if game.hitcounter == 5:
-                print("The penguins are victorious! All hail our penguin overlords.")
-                sys.exit()
-        elif game.penguincounter == 5:
-                print("You have thrown back the penguin hordes. Congratulations.")
-                sys.exit()
+                game.skill()  ## defines skillz
+                game.pause()
+                while game.hitcounter < 5 and game.penguincounter < 5:
+                        if game.choice == "throw":
+                                game.throwResult()
+                        elif game.choice == "duck":
+                                game.duckResult()
+                        if game.hitcounter == 5 or game.penguincounter == 5:
+                                break
+                        else:        
+                                game.pause()
+                                game.continueFight()
+                        game.pause()
+                if game.hitcounter == 5:
+                        print("The penguins are victorious! All hail our penguin overlords.")
+                        game.pause()
+                        game.playAgain()
+                elif game.penguincounter == 5:
+                        print("You have thrown back the penguin hordes. Congratulations.")
+                        game.pause()
+                        game.playAgain()
